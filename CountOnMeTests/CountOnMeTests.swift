@@ -21,6 +21,27 @@ class CountOnMeTests: XCTestCase {
         let expr = Expression(expr)
         XCTAssertEqual(try! expr.getResult(), expected, "\(expr) = \(expected)" + (comment.isEmpty ? "" : ", " + comment))
     }
+    
+//    func testNew() {
+//        ExpressionComputation(Expression("5 + 2"))
+//    }
+    
+    func testIsEmpty() {
+        XCTAssertEqual(Expression().isEmpty, true)
+        XCTAssertEqual(Expression("3 + 2").isEmpty, false)
+    }
+    
+    func testClear() {
+        let expr = Expression("3 - 6")
+        expr.clear()
+        XCTAssertEqual(expr.isEmpty, true)
+    }
+
+    func testLastElementIsAnOperator() {
+        XCTAssertEqual(Expression("3 - 6 +").lastElementIsAnOperator, true)
+        XCTAssertEqual(Expression("3 - 6 + ").lastElementIsAnOperator, true)
+        XCTAssertEqual(Expression("3 - 6 + 90").lastElementIsAnOperator, false)
+    }
 
     func testSimpleExpression() {
         expresionResultTest("8", expected: "8")
