@@ -2,7 +2,7 @@
 //  CountOnMeTests.swift
 //  CountOnMeTests
 //
-//  Created by Rod on 26/03/2022.
+//  Created by Rodolphe Desruelles on 26/03/2022.
 //
 
 @testable import CountOnMe
@@ -16,85 +16,144 @@ class CountOnMeTests: XCTestCase {
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-
-    func expresionResultTest(_ expr: String, expected: String, comment: String = "") {
-        let expr = Expression(expr)
-        XCTAssertEqual(try! expr.getResult(), expected, "\(expr) = \(expected)" + (comment.isEmpty ? "" : ", " + comment))
+   
+    func testGivenUnknownOperator_WhenTestingItsExistence_ThenResultIsFalse() {
+        XCTAssertEqual(ExpressionString.elementIsAnOperator("x"), false)
+        XCTAssertEqual(ExpressionString.elementIsAnOperator("$"), false)
     }
     
-//    func testNew() {
-//        ExpressionComputation(Expression("5 + 2"))
-//    }
-    
-    func testIsEmpty() {
-        XCTAssertEqual(Expression().isEmpty, true)
-        XCTAssertEqual(Expression("3 + 2").isEmpty, false)
+    func testGivenKnownOperator_WhenTestingItsExistence_ThenResultIsTrue() {
+        XCTAssertEqual(ExpressionString.elementIsAnOperator("+"), true)
+        XCTAssertEqual(ExpressionString.elementIsAnOperator("*"), true)
     }
     
-    func testClear() {
-        let expr = Expression("3 - 6")
+    func testGivenAnExpression_WhenClearingIt_ThenItContainsZero() {
+        let expr = ExpressionString("3 - 6")
         expr.clear()
-        XCTAssertEqual(expr.isEmpty, true)
+        XCTAssertEqual(expr.raw, "0")
     }
 
-    func testLastElementIsAnOperator() {
-        XCTAssertEqual(Expression("3 - 6 +").lastElementIsAnOperator, true)
-        XCTAssertEqual(Expression("3 - 6 + ").lastElementIsAnOperator, true)
-        XCTAssertEqual(Expression("3 - 6 + 90").lastElementIsAnOperator, false)
+    func testGivenAnExpression_WhenGettingElements_ThenSeparationIsCorrect() {
+        let expr = ExpressionString("3 + 6 / 8")
+        XCTAssertEqual(expr.elements, ["3", "+", "6", "/", "8"])
+    }
+    
+    func testGivenAnExpressionEndingWithAnOperator_WhenTestingIfLastElementIsAnOperator_ThenResultIsTrue() {
+        XCTAssertEqual(ExpressionString("3 - 6 +").lastElementIsAnOperator, true)
+        XCTAssertEqual(ExpressionString("3 - 6 + ").lastElementIsAnOperator, true)
+    }
+    
+    func testGivenAnExpressionEndingWithANumber_WhenTestingIfLastElementIsAnOperator_ThenResultIsFalse() {
+        XCTAssertEqual(ExpressionString("3 - 6 + 90").lastElementIsAnOperator, false)
     }
 
-    func testSimpleExpression() {
-        expresionResultTest("8", expected: "8")
-        expresionResultTest("235", expected: "235")
-
-        expresionResultTest("2 + 1", expected: "3")
-
-        expresionResultTest("10 - 2", expected: "8")
-
-        expresionResultTest("8 / 2", expected: "4")
-        expresionResultTest("25 / 3", expected: "8")
-
-        expresionResultTest("6 * 3", expected: "18")
-        expresionResultTest("6 * 3 / 3", expected: "6")
+    func testGivenAnExpressionCorrectlyFormattedAndEndingWithANumber_WhenTestingItsCorectness_ThenResultIsTrue() {
+        XCTAssertEqual(ExpressionString("3 + 23 * 8").isCorrect, true)
     }
 
-    func testExpressionWithZero() {
-        expresionResultTest("0 + 0", expected: "0")
-        expresionResultTest("2 + 0", expected: "2")
-
-        expresionResultTest("0 - 2", expected: "-2")
-
-        expresionResultTest("0 / 156", expected: "0")
-
-        expresionResultTest("0 * 0", expected: "0")
-        expresionResultTest("0 * 24", expected: "0")
-        expresionResultTest("340 * 0", expected: "0")
+    func testGivenAnExpressionIncorrectlyFormattedOrEndingWithAnOperator_WhenTestingItsCorectness_ThenResultIsFalse() {
+        XCTAssertEqual(ExpressionString("34 + 2 *").isCorrect, false)
+    }
+    
+    func testGivenANewExpression_WhenAddingZero_ThenNewNumberIsZero() {
+        let expr = ExpressionString()
+        expr.addDigit("0")
+        XCTAssertEqual(expr.raw, "0")
+    }
+    
+    func testGivenANewExpression_WhenAddingDigits_ThenNewNumberIsBuiltCorrectly() {
+        let expr = ExpressionString()
+        expr.addDigit("3")
+        XCTAssertEqual(expr.raw, "3")
+        expr.addDigit("0")
+        XCTAssertEqual(expr.raw, "30")
+    }
+    
+    func testGivenAnExpressionEndingWithAnOperator_WhenAddingZero_ThenZeroIsAddedCorrectly() {
+        let expr = ExpressionString("30 + 6 / ")
+        expr.addDigit("0")
+        XCTAssertEqual(expr.raw, "30 + 6 / 0")
+    }
+    
+    func testGivenAnExpressionEndingWithAnAloneZero_WhenAddingOtherDigits_ThenZeroIsRepcedByAddedDigits() {
+        let expr = ExpressionString("30 + 6 / 0")
+        expr.addDigit("8")
+        XCTAssertEqual(expr.raw, "30 + 6 / 8")
+        expr.addDigit("5")
+        XCTAssertEqual(expr.raw, "30 + 6 / 85")
     }
 
-    func testErrorWhenDividingByZero() {
-        XCTAssertThrowsError(try Expression("5 / 0").getResult())
-        XCTAssertThrowsError(try Expression("3 + 23 / 0 - 4").getResult())
+    func testGivenANewExpression_WhenAddingAnOperator_ThenOperatorIsAddedAfterZero() {
+        let expr = ExpressionString()
+        expr.addOperator("+")
+        XCTAssertEqual(expr.raw, "0 + ")
     }
 
-    func testExpressionWithPrecedence() {
-        expresionResultTest("3 * 2 + 7", expected: "13")
-        expresionResultTest("3 + 2 * 7", expected: "17")
-        expresionResultTest("3 + 2 * 7 + 5 * 4", expected: "37")
-        expresionResultTest("34 + 23 * 74 - 523 / 4", expected: "1606")
+    func testGivenAnExpressionEndingWithAnOperator_WhenAddingANewOperator_ThenOperatorIsReplacedByTheNewOne() {
+        let expr = ExpressionString("3 + 6 / ")
+        expr.addOperator("-")
+        XCTAssertEqual(expr.raw, "3 + 6 - ")
+    }
+    
+    func testGivenANewExpression_WhenExpressionIsFormatted_ThenResultIsAStringWithZero() {
+        let expr = ExpressionString()
+        XCTAssertEqual(ExpressionFormatter.format(expr), "0")
+        
+    }
+    
+    func testGivenAnExpressionWithAMultiplyOperator_WhenExpressionIsFormatted_ThenMultiplyOperatorIsCorrectlyFormatted() {
+        let expr = ExpressionString("3 * 6 / 8")
+        XCTAssertEqual(ExpressionFormatter.format(expr), "3 x 6 / 8")
     }
 
-//    func testExample() throws {
-//        // This is an example of a functional test case.
-//        // Use XCTAssert and related functions to verify your tests produce the correct results.
-//        // Any test you write for XCTest can be annotated as throws and async.
-//        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-//        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-//    }
-//
-//    func testPerformanceExample() throws {
-//        // This is an example of a performance test case.
-//        self.measure {
-//            // Put the code you want to measure the time of here.
-//        }
-//    }
+    func testGivenADoubleNumber_WhenFormatting_ThenNumberIsCorrectlyFormatted() {
+        XCTAssertEqual(ExpressionFormatter.formatResult(2), "2")
+        XCTAssertEqual(ExpressionFormatter.formatResult(2.34), "2,34")
+        XCTAssertEqual(ExpressionFormatter.formatResult(2.2485), "2,25")
+    }
+
+    // Helper for testing expression computation
+    func resultTest(_ exprString: String, expected: String, comment: String = "") {
+        let expr = ExpressionString(exprString)
+        let result = try! ExpressionComputation(expr).getResult()
+        let formattedResult = ExpressionFormatter.formatResult(result)
+        XCTAssertEqual(formattedResult, expected, "\(ExpressionFormatter.format(expr)) = \(expected)" + (comment.isEmpty ? "" : ", " + comment))
+    }
+    
+    // Helper for testing expression computation error
+    func resultErrorTest(_ exprString: String) {
+        let expr = ExpressionString(exprString)
+        XCTAssertThrowsError(try ExpressionComputation(expr).getResult())
+    }
+    
+    func testAnExpressionWithOnlyANumber_WhenComputingResult_ThenFormatedResultIsCorrect() {
+        resultTest("0", expected: "0")
+        resultTest("8", expected: "8")
+        resultTest("235", expected: "235")
+    }
+    
+    func testGivenASimpleExpression_WhenComputingResult_ThenFormatedResultIsCorrect() {
+        resultTest("2 + 1", expected: "3")
+        resultTest("10 - 2", expected: "8")
+        resultTest("8 / 2", expected: "4")
+        resultTest("6 * 3", expected: "18")
+    }
+    
+    func testGivenAnExpressionWithANonIntegerDivision_WhenComputingResult_ThenResultIsFormattedWithAtMostTwoDecimalPlaces() {
+        resultTest("7 / 2", expected: "3,5")
+        resultTest("9 / 4", expected: "2,25")
+        resultTest("10 / 3", expected: "3,33")
+    }
+
+    func testGivenAnExpressionContainingADivisionByZero_WhenComputingResult_ThenErrorIsThrown() {
+        resultErrorTest("5 / 0")
+        resultErrorTest("3 + 23 / 0 - 4")
+    }
+
+    func testGivenAnExpressionWithAMixOfPriorityAndNotPriorityOperations_WhenComputingResult_ThenOperatorsPrecedenceAndFormatedResultAreCorrect() {
+        resultTest("3 * 2 + 7", expected: "13")
+        resultTest("3 + 2 * 7", expected: "17")
+        resultTest("3 + 2 * 7 + 5 * 4", expected: "37")
+        resultTest("34 + 23 * 74 - 523 / 4", expected: "1605,25")
+    }
 }

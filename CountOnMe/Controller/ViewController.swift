@@ -2,37 +2,25 @@
 //  ViewController.swift
 //  CountOnMe
 //
-//  Created by Rod on 26/03/2022.
+//  Created by Rodolphe Desruelles on 26/03/2022.
 //
 
 import UIKit
 
 class ViewController: UIViewController {
-    private var expression = Expression()
+    private var expression = ExpressionString()
 
-    @IBOutlet var textView: UITextView!
+    private var hasResult = false
     
-    private var hasResult: Bool = false
+    // View components //
     
-    // View Life cycles
-    private func clear() {
-        expression.clear()
-        hasResult = false
-    }
+    @IBOutlet private var textView: UITextView!
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
-
+    // View events //
+    
+    @IBAction private func tappedClearButton(_: UIButton) {
         clear()
         updateTextView()
-
-    }
-    
-    @IBAction func tappedClearButton(_ sender: UIButton) {
-        clear()
-        updateTextView()
-
     }
     
     @IBAction private func tappedDigitButton(_ sender: UIButton) {
@@ -40,41 +28,37 @@ class ViewController: UIViewController {
             return
         }
         
-        processTappedDigit(digit)
+        processDigit(digit)
     }
     
     @IBAction private func tappedAddButton(_: UIButton) {
-        processTappedOperator("+")
+        processOperator("+")
     }
     
     @IBAction private func tappedSubstractButton(_: UIButton) {
-        processTappedOperator("-")
+        processOperator("-")
     }
     
-    @IBAction private func tappedMultiplyButton(_ sender: UIButton) {
-        processTappedOperator("*")
+    @IBAction private func tappedMultiplyButton(_: UIButton) {
+        processOperator("*")
     }
     
-    @IBAction private func tappedDivideButton(_ sender: UIButton) {
-        processTappedOperator("/")
+    @IBAction private func tappedDivideButton(_: UIButton) {
+        processOperator("/")
     }
     
-    @IBAction private func tappedEqualButton(_ sender: UIButton) {
-        guard expression.isCorrect else {
-            presentAlertVC("Entrez une expression correcte !")
-            return
-        }
-        
-        guard expression.hasEnoughElements else {
-            presentAlertVC("Démarrez un nouveau calcul !")
-            return
-        }
-        
-        displayResult()
+    @IBAction private func tappedEqualButton(_: UIButton) {
+        processEqual()
     }
     
-    // View actions
-    func processTappedDigit(_ digit: String) {
+    // Logic //
+    
+    private func clear() {
+        expression.clear()
+        hasResult = false
+    }
+    
+    private func processDigit(_ digit: String) {
         if hasResult {
             clear()
         }
@@ -84,26 +68,30 @@ class ViewController: UIViewController {
         updateTextView()
     }
     
-    func processTappedOperator(_ operatorSymbol: String) {
-        do {
-            try expression.addOperator(operatorSymbol)
-        
-            updateTextView()
-        } catch {
-            presentAlertVC("Un opérateur ne peut pas être mis en premier !")
+    private func processOperator(_ operatorSymbol: String) {
+        guard !hasResult else {
+            presentAlertVC("Démarrez un nouveau calcul avec la touche C ou en tapant un chiffre !")
+            return
         }
+
+        expression.addOperator(operatorSymbol)
+        
+        updateTextView()
     }
     
-    func updateTextView(append extra: String? = nil) {
-        let expr = expression.isEmpty ? "0" : ExpressionFormatter.format(expression)
-        textView.text = expr + (extra ?? "")
+    private func processEqual() {
+        guard expression.isCorrect else {
+            presentAlertVC("Entrez une expression correcte !")
+            return
+        }
+        
+        displayResult()
     }
     
-    func displayResult() {
+    private func displayResult() {
         do {
-            let result = try ExpressionComputation(expression).getResult()
-//            let result = try expression.getResult()
-            updateTextView(append: " = \(ExpressionFormatter.formatResult(result))")
+            let number = try ExpressionComputation(expression).getResult()
+            updateTextView(append: " = \(ExpressionFormatter.formatResult(number))")
             hasResult = true
         } catch {
             updateTextView(append: " = Err")
@@ -112,9 +100,24 @@ class ViewController: UIViewController {
         }
     }
     
+    private func updateTextView(append extra: String? = nil) {
+        textView.text = ExpressionFormatter.format(expression) + (extra ?? "")
+    }
+
     private func presentAlertVC(_ message: String) {
         let alertVC = UIAlertController(title: "Zéro !", message: message, preferredStyle: .alert)
+        alertVC.view.accessibilityIdentifier = "errorAlert"
         alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
         present(alertVC, animated: true, completion: nil)
+    }
+    
+    // Initialization //
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view.
+
+        clear()
+        updateTextView()
     }
 }
