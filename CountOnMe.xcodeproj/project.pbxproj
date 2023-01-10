@@ -40,6 +40,7 @@
 		DC5AB65527F4D0B300A2FC5F /* ExpressionComputation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpressionComputation.swift; sourceTree = "<group>"; };
 		DC88D86927FBC20700DB7DDC /* ExpressionFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpressionFormatter.swift; sourceTree = "<group>"; };
 		DC9148DE296E13730053598B /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		DC9148DF296E2B670053598B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		DCDF9EE627EF49ED00F5487A /* CountOnMe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CountOnMe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCDF9EE927EF49ED00F5487A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DCDF9EED27EF49ED00F5487A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -109,6 +110,7 @@
 		DCDF9EDD27EF49ED00F5487A = {
 			isa = PBXGroup;
 			children = (
+				DC9148DF296E2B670053598B /* README.md */,
 				DC9148DE296E13730053598B /* .gitignore */,
 				DCDF9EE827EF49ED00F5487A /* CountOnMe */,
 				DCDF9EFF27EF49F200F5487A /* CountOnMeTests */,
