@@ -1,10 +1,11 @@
 //
-//  Expression.swift
+//  ExpressionComputation.swift
 //  CountOnMe
 //
 //  Created by Rodolphe Desruelles on 25/03/2022.
 //
 
+// ExpressionComputation is dedicated to compute the result of an ExpressionString
 class ExpressionComputation {
     enum Err: Error {
         case divisionByZero
@@ -27,7 +28,7 @@ class ExpressionComputation {
             }
         }
     }
-    
+
     private struct Operation {
         var mathOperator: MathOperator
         var number: Double
@@ -44,7 +45,7 @@ class ExpressionComputation {
     init(_ expression: ExpressionString) {
         let elements = expression.elements
 
-        firstNumber = Double(elements[0])!
+        self.firstNumber = Double(elements[0])!
 
         for index in stride(from: 1, to: elements.count, by: 2) {
             let operatorSymbol = elements[index]
@@ -57,7 +58,7 @@ class ExpressionComputation {
         var i = 0
         while i < operations.count {
             let mathOperator = operations[i].mathOperator
-            
+
             // Go to next operation if necessary (operators precedence usage)
             if let autohrizedOperators = autohrizedOperators, !autohrizedOperators.contains(mathOperator) {
                 i += 1

@@ -1,5 +1,5 @@
 //
-//  Expression.swift
+//  ExpressionFormatter.swift
 //  CountOnMe
 //
 //  Created by Rodolphe Desruelles on 25/03/2022.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-class ExpressionFormatter {    
+class ExpressionFormatter {
     private static var resultFormatter: NumberFormatter = {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal

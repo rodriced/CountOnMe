@@ -1,11 +1,11 @@
 //
-//  Expression.swift
+//  ExpressionString.swift
 //  CountOnMe
 //
 //  Created by Rodolphe Desruelles on 25/03/2022.
 //
 
-
+// ExpressionString is used to build an arithmetic expression piece by piece as a String
 class ExpressionString {
     private static let operators = "+-*/"
 
@@ -18,12 +18,12 @@ class ExpressionString {
     init() {
         self.raw = "0"
     }
-    
+
     // For testing
     init(_ rawString: String) {
         self.raw = rawString
     }
-    
+
     func clear() {
         raw = "0"
     }
@@ -46,11 +46,11 @@ class ExpressionString {
     func addDigit(_ digit: String) {
         // A number can be 0 but cannot begin with 0 if it has more than one digit
         if raw == "0" { raw = digit; return }
-        
+
         if raw.hasSuffix(" 0") {
             raw.removeLast()
         }
-        
+
         raw.append(digit)
     }
 

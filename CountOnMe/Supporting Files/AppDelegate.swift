@@ -1,9 +1,8 @@
 //
 //  AppDelegate.swift
-//  SimpleCalc
+//  CountOnMe
 //
-//  Created by Vincent Saluzzo on 29/03/2019.
-//  Copyright © 2019 Vincent Saluzzo. All rights reserved.
+//  Created by Rodolphe Desruelles on 26/03/2022.
 //
 
 import UIKit
@@ -12,7 +11,6 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -41,6 +39,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
-
 }
-
